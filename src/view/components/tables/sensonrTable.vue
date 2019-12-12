@@ -55,23 +55,23 @@
 </template>
 
 <script>
-import Tables from "_c/tables";
+import Tables from '_c/tables'
 import {
   getsensonrTableData,
   GetfindSensonrByNum,
   GetfindSensonrByNumSousuo,
   DelSensonrByNum,
   updateSensonr
-} from "@/api/sensonr";
-import axios from "axios";
+} from '@/api/sensonr'
+import axios from 'axios'
 export default {
-  name: "tables_page",
-  //局部刷新
-  inject: ["reload"],
+  name: 'tables_page',
+  // 局部刷新
+  inject: ['reload'],
   components: {
     Tables
   },
-  data() {
+  data () {
     return {
       pageSize: 15,
       totalProblemList: [],
@@ -79,218 +79,218 @@ export default {
       dataCount: 0,
       modalVisible: false,
       columns: [
-        { title: "设备号", key: "sensonrnum", sortable: true },
+        { title: '设备号', key: 'sensonrnum', sortable: true },
         {
-          title: "设备名称",
-          key: "sensorname",
+          title: '设备名称',
+          key: 'sensorname',
           editable: true,
-          align: "center"
+          align: 'center'
         },
         {
-          title: "状态",
-          key: "state",
-          align: "center",
+          title: '状态',
+          key: 'state',
+          align: 'center',
           render: (h, params) => {
-            let row = params.row;
-            let text = "";
-            let color = "";
+            let row = params.row
+            let text = ''
+            let color = ''
             if (row.state === 0) {
-              text = "关闭";
-              color = "red";
+              text = '关闭'
+              color = 'red'
             } else if (row.state === 1) {
-              text = "开启";
-              color = "green";
-            } 
+              text = '开启'
+              color = 'green'
+            }
             return h(
-              "Tag",
+              'Tag',
               {
                 props: {
                   color: color
                 }
               },
               text
-            );
+            )
           }
         },
-        { title: "设备串口号", key: "com", align: "center" },
+        { title: '设备串口号', key: 'com', align: 'center' },
         {
-          title: "操作",
-          key: "action",
-          align: "center",
+          title: '操作',
+          key: 'action',
+          align: 'center',
           render: (h, tableData) => {
-            return h("div", [
+            return h('div', [
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "primary",
-                    size: "small"
+                    type: 'primary',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.updataredSensonr(tableData.index);
+                      this.updataredSensonr(tableData.index)
                     }
                   },
                   style: {
-                    marginRight: "5px"
+                    marginRight: '5px'
                   }
                 },
-                "修改"
+                '修改'
               ),
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "error",
-                    size: "small"
+                    type: 'error',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.DelSensonr(tableData.index);
+                      this.DelSensonr(tableData.index)
                     }
                   }
                 },
-                "删除"
+                '删除'
               )
-            ]);
+            ])
           }
         }
       ],
       tableData: [],
       formValidate: {
-        sensonrnum: "",
-        sensorname: "",
-        state: "",
-        com: ""
+        sensonrnum: '',
+        sensorname: '',
+        state: '',
+        com: ''
       },
       ruleValidate: {
         sensorname: [
-          { required: true, message: "设备名称不能为空", trigger: "blur" }
+          { required: true, message: '设备名称不能为空', trigger: 'blur' }
         ],
         state: [
           {
             required: true,
-            message: "状态不可为空0:正常 1:关闭",
-            trigger: "blur"
+            message: '状态不可为空0:正常 1:关闭',
+            trigger: 'blur'
           }
         ],
-        com: [{ required: true, message: "串口号不能为空", trigger: "blur" }]
+        com: [{ required: true, message: '串口号不能为空', trigger: 'blur' }]
       }
-    };
+    }
   },
   methods: {
-    handleDelete(params) {
-      console.log(params);
+    handleDelete (params) {
+      console.log(params)
     },
-    exportExcel() {
+    exportExcel () {
       this.$refs.tables.exportCsv({
         filename: `table-${new Date().valueOf()}.csv`
-      });
+      })
     },
     // 前端分页
-    onChangepage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalProblemList.slice(_start, _end);
+    onChangepage (index) {
+      var _start = (index - 1) * this.pageSize
+      var _end = index * this.pageSize
+      this.showList = this.totalProblemList.slice(_start, _end)
     },
     // 重新拿 刷新数据
-    getNewTableDate() {
+    getNewTableDate () {
       getsensonrTableData().then(res => {
-        this.tableData = res.data;
-      });
+        this.tableData = res.data
+      })
     },
     /**
      * 删除操作
      * @param:rednum
      */
-    DelSensonr(index) {
-      console.log(this.tableData[index]);
-      var result = confirm("请确认是否删除？");
+    DelSensonr (index) {
+      console.log(this.tableData[index])
+      var result = confirm('请确认是否删除？')
       if (result) {
         DelSensonrByNum(this.tableData[index].sensonrnum).then(res => {
           if (res) {
-            this.$Message.success("删除成功！");
-            this.getNewTableDate();
+            this.$Message.success('删除成功！')
+            this.getNewTableDate()
           } else {
-            this.$Message.error("删除失败！");
+            this.$Message.error('删除失败！')
           }
-        });
+        })
       } else {
-        this.$Message.error("删除取消！");
+        this.$Message.error('删除取消！')
       }
     },
     /**
      * 传感器信息修改操作
      */
-    updataredSensonr(index) {
+    updataredSensonr (index) {
       GetfindSensonrByNum(this.tableData[index].sensonrnum).then(res => {
-        console.log(res.data[0]);
-        this.formValidate.sensonrnum = res.data[0].sensonrnum;
-        this.formValidate.sensorname = res.data[0].sensorname;
-        this.formValidate.state = res.data[0].state;
-        this.formValidate.com = res.data[0].com;
-      });
-      this.modalVisible = true;
+        console.log(res.data[0])
+        this.formValidate.sensonrnum = res.data[0].sensonrnum
+        this.formValidate.sensorname = res.data[0].sensorname
+        this.formValidate.state = res.data[0].state
+        this.formValidate.com = res.data[0].com
+      })
+      this.modalVisible = true
     },
-    handleSubmit() {
+    handleSubmit () {
       this.$refs.formValidate.validate(validate => {
-        console.log(validate);
-        var formdata = {};
-        formdata.sensonrnum = this.formValidate.sensonrnum;
-        formdata.sensorname = this.formValidate.sensorname;
-        formdata.state = this.formValidate.state;
-        formdata.com = this.formValidate.com;
-    
-        console.log(formdata);
+        console.log(validate)
+        var formdata = {}
+        formdata.sensonrnum = this.formValidate.sensonrnum
+        formdata.sensorname = this.formValidate.sensorname
+        formdata.state = this.formValidate.state
+        formdata.com = this.formValidate.com
+
+        console.log(formdata)
         if (validate) {
           updateSensonr(formdata).then(res => {
-            this.$Message.success("修改成功！");
-            this.getNewTableDate();
-            this.modalVisible = false;
-          });
+            this.$Message.success('修改成功！')
+            this.getNewTableDate()
+            this.modalVisible = false
+          })
         } else {
-          this.$message.error("修改失败！！");
+          this.$message.error('修改失败！！')
         }
-      });
+      })
     },
-    //搜索功能
-    handleSearch() {
-      var formdata = {};
-      formdata.sensonrnum = this.formValidate.sensonrnum;
-      this.GetfindSensonrByNum1(formdata);
+    // 搜索功能
+    handleSearch () {
+      var formdata = {}
+      formdata.sensonrnum = this.formValidate.sensonrnum
+      this.GetfindSensonrByNum1(formdata)
     },
-    GetfindSensonrByNum1(formdata) {
-      if (formdata.sensonrnum === "") {
+    GetfindSensonrByNum1 (formdata) {
+      if (formdata.sensonrnum === '') {
         getsensonrTableData().then(res => {
-          this.tableData = res.data;
-        });
+          this.tableData = res.data
+        })
       }
       GetfindSensonrByNumSousuo(formdata).then(res => {
-        console.log(res);
-        this.tableData = res.data;
-      });
+        console.log(res)
+        this.tableData = res.data
+      })
     }
   },
-  mounted() {
+  mounted () {
     getsensonrTableData().then(res => {
-      this.totalProblemList = res.data;
+      this.totalProblemList = res.data
       // 拿到所有数据
-      this.dataCount = this.totalProblemList.length;
+      this.dataCount = this.totalProblemList.length
       // 总条数
       if (this.dataCount < this.pageSize) {
-        this.showList = this.totalProblemList;
+        this.showList = this.totalProblemList
       } else {
-        this.showList = this.totalProblemList.slice(0, this.pageSize);
+        this.showList = this.totalProblemList.slice(0, this.pageSize)
       }
-    });
+    })
   },
-  //请求钩子
-  created() {
+  // 请求钩子
+  created () {
     getsensonrTableData().then(res => {
-      this.tableData = res.data;
-    });
+      this.tableData = res.data
+    })
   }
-};
+}
 </script>
 
 <style>

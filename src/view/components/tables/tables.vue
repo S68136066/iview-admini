@@ -1,12 +1,12 @@
 <template v-for="(item,index) in showList">
   <div>
     <Card>
-      <Form :model="formValidate" :label-width="100"  inline> 
-        红酒名字:<Input style="width: 150px;" v-model="formValidate.redname" placeholder="请输入红酒名字"></Input>    
-         &nbsp; &nbsp; &nbsp;   
+      <Form :model="formValidate" :label-width="100"  inline>
+        红酒名字:<Input style="width: 150px;" v-model="formValidate.redname" placeholder="请输入红酒名字"></Input>
+         &nbsp; &nbsp; &nbsp;
         <Button type="primary" @click="handleSearch()">搜索</Button>
       </Form>
-      &nbsp; &nbsp; &nbsp; 
+      &nbsp; &nbsp; &nbsp;
       <tables
         ref="tables"
         editable
@@ -61,23 +61,23 @@
 </template>
 
 <script>
-import Tables from "_c/tables";
+import Tables from '_c/tables'
 import {
   getTableData,
   getdelRedHis,
   getRedHisByRednum,
   updateRedHis,
   getfindredHisByRedname
-} from "@/api/data";
-import axios from "axios";
+} from '@/api/data'
+import axios from 'axios'
 export default {
-  name: "tables_page",
-  //局部刷新
-  inject: ["reload"],
+  name: 'tables_page',
+  // 局部刷新
+  inject: ['reload'],
   components: {
     Tables
   },
-  data() {
+  data () {
     return {
       pageSize: 15,
       totalProblemList: [],
@@ -85,36 +85,36 @@ export default {
       dataCount: 0,
       modalVisible: false,
       columns: [
-        { title: "Name", key: "redname", sortable: true },
-        { title: "温度(℃)", key: "wendu", editable: true,align: "center" },
-        { title: "湿度(%)", key: "shidu" ,align: "center"},
-        { title: "检测时间", key: "totime" ,align: "center"},
-        { title: "设备号", key: "sensonrnum",align: "center" },
+        { title: 'Name', key: 'redname', sortable: true },
+        { title: '温度(℃)', key: 'wendu', editable: true, align: 'center' },
+        { title: '湿度(%)', key: 'shidu', align: 'center' },
+        { title: '检测时间', key: 'totime', align: 'center' },
+        { title: '设备号', key: 'sensonrnum', align: 'center' },
         {
-          title: "状态",
-          align: "center",
+          title: '状态',
+          align: 'center',
           render: (h, params) => {
-            let row = params.row;
-            let text1 = "";
-            let color1 = "";
-            let text2 = "";
-            let color2 = ""
-            if(row.wendu >10 && row.wendu<14){
-              text1="温度正常";
-              color1="green"
-            }else{
-              text1 = "温度异常";
-              color1 = "red"
-            }if(row.shidu>65 && row.shidu<76){
-              text2 = "湿度正常";
-              color2 = "green"
-            }else{
-              text2 = "湿度异常";
-              color2 = "red"
+            let row = params.row
+            let text1 = ''
+            let color1 = ''
+            let text2 = ''
+            let color2 = ''
+            if (row.wendu > 10 && row.wendu < 14) {
+              text1 = '温度正常'
+              color1 = 'green'
+            } else {
+              text1 = '温度异常'
+              color1 = 'red'
+            } if (row.shidu > 65 && row.shidu < 76) {
+              text2 = '湿度正常'
+              color2 = 'green'
+            } else {
+              text2 = '湿度异常'
+              color2 = 'red'
             }
-            return h("div", [
+            return h('div', [
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: color1
@@ -123,119 +123,119 @@ export default {
                 text1
               ),
               h(
-                "Tag",
+                'Tag',
                 {
                   props: {
                     color: color2
-                  },
+                  }
                 },
                 text2
               )
-            ]);
+            ])
           }
         },
         {
-          title: "操作",
-          key: "action",
-          align: "center",
+          title: '操作',
+          key: 'action',
+          align: 'center',
           render: (h, tableData) => {
-            return h("div", [
+            return h('div', [
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "primary",
-                    size: "small"
+                    type: 'primary',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.updataredHis(tableData.index);
+                      this.updataredHis(tableData.index)
                     }
                   },
-                   style: {                                  
-                    marginRight: "5px"
-                  },
+                  style: {
+                    marginRight: '5px'
+                  }
                 },
-                "修改"
+                '修改'
               ),
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "error",
-                    size: "small"
+                    type: 'error',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.daletTable(tableData.index);
+                      this.daletTable(tableData.index)
                     }
                   }
                 },
-                "删除"
+                '删除'
               )
-            ]);
+            ])
           }
         }
       ],
       tableData: [],
       formValidate: {
-        rednum: "",
-        redname: "",
-        wendu: "",
-        shidu: "",
-        sensonrnum: "",
-        totime: ""
+        rednum: '',
+        redname: '',
+        wendu: '',
+        shidu: '',
+        sensonrnum: '',
+        totime: ''
         // price:''
       },
       ruleValidate: {
         redname: [
-          { required: true, message: "红酒名字不能为空", trigger: "blur" }
+          { required: true, message: '红酒名字不能为空', trigger: 'blur' }
         ],
-        wendu: [{ required: true, message: "温度不能为空", trigger: "blur" }],
-        shidu: [{ required: true, message: "湿度不能为空", trigger: "blur" }],
+        wendu: [{ required: true, message: '温度不能为空', trigger: 'blur' }],
+        shidu: [{ required: true, message: '湿度不能为空', trigger: 'blur' }],
         sensonrnum: [
-          { required: true, message: "设备号不能为空", trigger: "blur" }
+          { required: true, message: '设备号不能为空', trigger: 'blur' }
         ],
-        totime: [{ required: true, message: "时间不能为空", trigger: "blur" }]
+        totime: [{ required: true, message: '时间不能为空', trigger: 'blur' }]
       }
-    };
+    }
   },
   methods: {
-    handleDelete(params) {
-      console.log(params);
+    handleDelete (params) {
+      console.log(params)
     },
-    exportExcel() {
+    exportExcel () {
       this.$refs.tables.exportCsv({
         filename: `table-${new Date().valueOf()}.csv`
-      });
+      })
     },
     // 前端分页
-    onChangepage(index) {
+    onChangepage (index) {
       debugger
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalProblemList.slice(_start, _end);
+      var _start = (index - 1) * this.pageSize
+      var _end = index * this.pageSize
+      this.showList = this.totalProblemList.slice(_start, _end)
     },
     // 重新拿刷新数据
-    getNewTableDate() {
+    getNewTableDate () {
       getTableData().then(res => {
-        this.tableData = res.data;
-      });
+        this.tableData = res.data
+      })
     },
-    //搜索功能
-    handleSearch() {
-      var formdata = {};
+    // 搜索功能
+    handleSearch () {
+      var formdata = {}
       formdata.redname = this.formValidate.redname
-      this.getfindredHisByRedname1(formdata);
+      this.getfindredHisByRedname1(formdata)
       console.log(formdata.redname)
     },
-    getfindredHisByRedname1(formdata){
-       if (formdata.redname === "") {
+    getfindredHisByRedname1 (formdata) {
+      if (formdata.redname === '') {
         getTableData().then(res => {
-          this.tableData = res.data;
-        });
+          this.tableData = res.data
+        })
       }
-      getfindredHisByRedname(formdata).then(res=>{
+      getfindredHisByRedname(formdata).then(res => {
         console.log(res)
         this.tableData = res.data
       })
@@ -244,20 +244,20 @@ export default {
      * 删除操作
      * @param:rednum
      */
-    daletTable(index) {
-      console.log(this.tableData[index]);
-      var result = confirm("请确认是否删除？");
+    daletTable (index) {
+      console.log(this.tableData[index])
+      var result = confirm('请确认是否删除？')
       if (result) {
         getdelRedHis(this.tableData[index].rednum).then(res => {
           if (res) {
-            this.$Message.success("删除成功！");
-            this.getNewTableDate();
+            this.$Message.success('删除成功！')
+            this.getNewTableDate()
           } else {
-            this.$Message.error("删除失败！");
+            this.$Message.error('删除失败！')
           }
-        });
+        })
       } else {
-        this.$Message.error("删除取消！");
+        this.$Message.error('删除取消！')
       }
     },
     /**
@@ -268,61 +268,61 @@ export default {
      * @param:shidu
      * @param:totim
      */
-    updataredHis(index) {
+    updataredHis (index) {
       getRedHisByRednum(this.tableData[index].rednum).then(res => {
-        console.log(res.data[0]);
-        this.formValidate.rednum = res.data[0].rednum;
-        this.formValidate.redname = res.data[0].redname;
-        this.formValidate.wendu = res.data[0].wendu;
-        this.formValidate.shidu = res.data[0].shidu;
-        this.formValidate.totime = res.data[0].totime;
-        this.formValidate.sensonrnum = res.data[0].sensonrnum;
-      });
-      this.modalVisible = true;
+        console.log(res.data[0])
+        this.formValidate.rednum = res.data[0].rednum
+        this.formValidate.redname = res.data[0].redname
+        this.formValidate.wendu = res.data[0].wendu
+        this.formValidate.shidu = res.data[0].shidu
+        this.formValidate.totime = res.data[0].totime
+        this.formValidate.sensonrnum = res.data[0].sensonrnum
+      })
+      this.modalVisible = true
     },
-    handleSubmit() {
+    handleSubmit () {
       this.$refs.formValidate.validate(validate => {
-        console.log(validate);
-        var formdata = {};
-        formdata.redname = this.formValidate.redname;
-        formdata.wendu = this.formValidate.wendu;
-        formdata.shidu = this.formValidate.shidu;
-        formdata.totime = this.formValidate.totime;
-        formdata.sensonrnum = this.formValidate.sensonrnum;
-        formdata.rednum = this.formValidate.rednum;
-        console.log(formdata);
+        console.log(validate)
+        var formdata = {}
+        formdata.redname = this.formValidate.redname
+        formdata.wendu = this.formValidate.wendu
+        formdata.shidu = this.formValidate.shidu
+        formdata.totime = this.formValidate.totime
+        formdata.sensonrnum = this.formValidate.sensonrnum
+        formdata.rednum = this.formValidate.rednum
+        console.log(formdata)
         if (validate) {
           updateRedHis(formdata).then(res => {
-            this.$Message.success("修改成功！");
-            this.getNewTableDate();
-            this.modalVisible = false;
-          });
+            this.$Message.success('修改成功！')
+            this.getNewTableDate()
+            this.modalVisible = false
+          })
         } else {
-          this.$message.error("修改失败！！");
+          this.$message.error('修改失败！！')
         }
-      });
+      })
     }
   },
-  mounted() {
+  mounted () {
     getTableData().then(res => {
-      this.totalProblemList = res.data;
+      this.totalProblemList = res.data
       // 拿到所有数据
-      this.dataCount = this.totalProblemList.length;
+      this.dataCount = this.totalProblemList.length
       // 总条数
       if (this.dataCount < this.pageSize) {
-        this.showList = this.totalProblemList;
+        this.showList = this.totalProblemList
       } else {
-        this.showList = this.totalProblemList.slice(0, this.pageSize);
+        this.showList = this.totalProblemList.slice(0, this.pageSize)
       }
-    });
+    })
   },
-  //请求钩子
-  created() {
+  // 请求钩子
+  created () {
     getTableData().then(res => {
-      this.tableData = res.data;
-    });
+      this.tableData = res.data
+    })
   }
-};
+}
 </script>
 
 <style>

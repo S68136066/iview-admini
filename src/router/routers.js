@@ -196,7 +196,7 @@ export default [
           title: '打包管理'
         },
         component: () => import('@/view/components/tables/JarManger.vue')
-      },
+      }
       // {
       //   path: 'WebSql_Test',
       //   name: 'WebSql_Test',
@@ -233,44 +233,44 @@ export default [
       //   },
       //   component: () => import('@/view/components/editor/editor.vue')
       // },
-  //     {
-  //       path: 'icons_page',
-  //       name: 'icons_page',
-  //       meta: {
-  //         icon: '_bear',
-  //         title: '自定义图标'
-  //       },
-  //       component: () => import('@/view/components/icons/icons.vue')
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/update',
-  //   name: 'update',
-  //   meta: {
-  //     icon: 'md-cloud-upload',
-  //     title: '数据上传'
-  //   },
-  //   component: Main,
-  //   children: [
-  //     {
-  //       path: 'update_table_page',
-  //       name: 'update_table_page',
-  //       meta: {
-  //         icon: 'ios-document',
-  //         title: '上传Csv'
-  //       },
-  //       component: () => import('@/view/update/update-table.vue')
-  //     },
-  //     {
-  //       path: 'update_paste_page',
-  //       name: 'update_paste_page',
-  //       meta: {
-  //         icon: 'md-clipboard',
-  //         title: '粘贴表格数据'
-  //       },
-  //       component: () => import('@/view/update/update-paste.vue')
-  //     }
+      //     {
+      //       path: 'icons_page',
+      //       name: 'icons_page',
+      //       meta: {
+      //         icon: '_bear',
+      //         title: '自定义图标'
+      //       },
+      //       component: () => import('@/view/components/icons/icons.vue')
+      //     }
+      //   ]
+      // },
+      // {
+      //   path: '/update',
+      //   name: 'update',
+      //   meta: {
+      //     icon: 'md-cloud-upload',
+      //     title: '数据上传'
+      //   },
+      //   component: Main,
+      //   children: [
+      //     {
+      //       path: 'update_table_page',
+      //       name: 'update_table_page',
+      //       meta: {
+      //         icon: 'ios-document',
+      //         title: '上传Csv'
+      //       },
+      //       component: () => import('@/view/update/update-table.vue')
+      //     },
+      //     {
+      //       path: 'update_paste_page',
+      //       name: 'update_paste_page',
+      //       meta: {
+      //         icon: 'md-clipboard',
+      //         title: '粘贴表格数据'
+      //       },
+      //       component: () => import('@/view/update/update-paste.vue')
+      //     }
     ]
   },
   // {

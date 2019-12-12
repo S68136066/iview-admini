@@ -6,52 +6,52 @@ export const getTableData = () => {
     method: 'get'
   })
 }
-//删除数据
-export const getdelRedHis = (rednum) =>{
+// 删除数据
+export const getdelRedHis = (rednum) => {
   return axios.request({
-    url: 'http://localhost:8080/deletRedHis',  
+    url: 'http://localhost:8080/deletRedHis',
     method: 'get',
     params: {
-      rednum:rednum
-    }    
+      rednum: rednum
+    }
   })
 }
-//根据Rednum查询
-export const getRedHisByRednum = (rednum) =>{
+// 根据Rednum查询
+export const getRedHisByRednum = (rednum) => {
   return axios.request({
-    url: 'http://localhost:8080/findRedHisByRednum',  
+    url: 'http://localhost:8080/findRedHisByRednum',
     method: 'get',
     params: {
-      rednum:rednum
-    }    
+      rednum: rednum
+    }
   })
 }
-//getfindredHisByRedname
-export const getfindredHisByRedname = (formdata) =>{
+// getfindredHisByRedname
+export const getfindredHisByRedname = (formdata) => {
   return axios.request({
-    url: 'http://localhost:8080/findRedHisByRedname',  
+    url: 'http://localhost:8080/findRedHisByRedname',
     method: 'get',
     params: {
-      redname:formdata.redname
-    }    
+      redname: formdata.redname
+    }
   })
 }
-//修改红酒温湿度历史信息
-export const updateRedHis = (formdata) =>{
+// 修改红酒温湿度历史信息
+export const updateRedHis = (formdata) => {
   return axios.request({
-    url: 'http://localhost:8080/updateRedHistroyByRednumss',  
+    url: 'http://localhost:8080/updateRedHistroyByRednumss',
     method: 'get',
     params: {
-      redname:formdata.redname,
-      wendu:formdata.wendu,
-      shidu:formdata.shidu,
-      totime:formdata.totime,
-      sensonrnum:formdata.sensonrnum,
-      rednum:formdata.rednum
-    }    
+      redname: formdata.redname,
+      wendu: formdata.wendu,
+      shidu: formdata.shidu,
+      totime: formdata.totime,
+      sensonrnum: formdata.sensonrnum,
+      rednum: formdata.rednum
+    }
   })
 }
-// 
+//
 export const getDragList = () => {
   return axios.request({
     url: 'get_drag_list',

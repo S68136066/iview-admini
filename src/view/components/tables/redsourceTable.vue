@@ -1,12 +1,12 @@
 <template v-for="(item,index) in showList">
   <div>
     <Card>
-      <Form :model="formValidate" :label-width="100"  inline> 
-        红酒品牌:<Input style="width: 150px;" v-model="formValidate.redname" placeholder="请输入红酒品牌"></Input>    
-         &nbsp; &nbsp; &nbsp;   
+      <Form :model="formValidate" :label-width="100"  inline>
+        红酒品牌:<Input style="width: 150px;" v-model="formValidate.redname" placeholder="请输入红酒品牌"></Input>
+         &nbsp; &nbsp; &nbsp;
         <Button type="primary" @click="handleSearch()">搜索</Button>
       </Form>
-      &nbsp; &nbsp; &nbsp; 
+      &nbsp; &nbsp; &nbsp;
       <tables
         ref="tables"
         editable
@@ -58,23 +58,23 @@
 </template>
 
 <script>
-import Tables from "_c/tables";
-import { 
- getreesourceTableData,
- getredsourceByRedID,
- updateRedSource,
- daletRedSourceByRedID,
- findredSourceByRedname
-} from "@/api/redsource";
-import axios from "axios";
+import Tables from '_c/tables'
+import {
+  getreesourceTableData,
+  getredsourceByRedID,
+  updateRedSource,
+  daletRedSourceByRedID,
+  findredSourceByRedname
+} from '@/api/redsource'
+import axios from 'axios'
 export default {
-  name: "tables_page",
-  //局部刷新
-  inject: ["reload"],
+  name: 'tables_page',
+  // 局部刷新
+  inject: ['reload'],
   components: {
     Tables
   },
-  data() {
+  data () {
     return {
       pageSize: 15,
       totalProblemList: [],
@@ -82,114 +82,114 @@ export default {
       dataCount: 0,
       modalVisible: false,
       columns: [
-        { title: "红酒编号", key: "redID", sortable: true },
-        { title: "红酒品牌", key: "redname", editable: true },
-        { title: "原产地", key: "sourcearea" },
-        { title: "生产日期", key: "sourceyear" },
-        { title: "生产公司", key: "sourcecompany" },
+        { title: '红酒编号', key: 'redID', sortable: true },
+        { title: '红酒品牌', key: 'redname', editable: true },
+        { title: '原产地', key: 'sourcearea' },
+        { title: '生产日期', key: 'sourceyear' },
+        { title: '生产公司', key: 'sourcecompany' },
         {
-          title: "操作",
-          key: "action",
-          align: "center",
+          title: '操作',
+          key: 'action',
+          align: 'center',
           render: (h, tableData) => {
-            return h("div", [
+            return h('div', [
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "primary",
-                    size: "small"
+                    type: 'primary',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.updataredSource(tableData.index);
+                      this.updataredSource(tableData.index)
                     }
                   },
-                  style: {                                  
-                    marginRight: "5px"
-                  },
+                  style: {
+                    marginRight: '5px'
+                  }
                 },
-                "修改"
+                '修改'
               ),
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "error",
-                    size: "small"
+                    type: 'error',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.daletRedSource(tableData.index);
+                      this.daletRedSource(tableData.index)
                     }
                   }
                 },
-                "删除"
+                '删除'
               )
-            ]);
+            ])
           }
         }
       ],
       tableData: [],
       formValidate: {
-        redID: "",
-        redname: "",
-        sourcearea: "",
-        sourceyear: "",
-        sourcecompany: "",
+        redID: '',
+        redname: '',
+        sourcearea: '',
+        sourceyear: '',
+        sourcecompany: ''
       },
       ruleValidate: {
         redname: [
-          { required: true, message: "红酒名字不能为空", trigger: "blur" }
+          { required: true, message: '红酒名字不能为空', trigger: 'blur' }
         ],
-        wendu: [{ required: true, message: "温度不能为空", trigger: "blur" }],
-        shidu: [{ required: true, message: "湿度不能为空", trigger: "blur" }],
+        wendu: [{ required: true, message: '温度不能为空', trigger: 'blur' }],
+        shidu: [{ required: true, message: '湿度不能为空', trigger: 'blur' }],
         sensonrnum: [
-          { required: true, message: "设备号不能为空", trigger: "blur" }
+          { required: true, message: '设备号不能为空', trigger: 'blur' }
         ],
-        totime: [{ required: true, message: "时间不能为空", trigger: "blur" }]
+        totime: [{ required: true, message: '时间不能为空', trigger: 'blur' }]
       }
-    };
+    }
   },
   methods: {
-    handleDelete(params) {
-      console.log(params);
+    handleDelete (params) {
+      console.log(params)
     },
-    exportExcel() {
+    exportExcel () {
       this.$refs.tables.exportCsv({
         filename: `table-${new Date().valueOf()}.csv`
-      });
+      })
     },
     // 前端分页
-    onChangepage(index) {
-      var _start = (index - 1) * this.pageSize;
-      var _end = index * this.pageSize;
-      this.showList = this.totalProblemList.slice(_start, _end);
+    onChangepage (index) {
+      var _start = (index - 1) * this.pageSize
+      var _end = index * this.pageSize
+      this.showList = this.totalProblemList.slice(_start, _end)
     },
     // 重新拿刷新数据
-    getNewTableDate() {
+    getNewTableDate () {
       getreesourceTableData().then(res => {
-        this.tableData = res.data;
-      });
+        this.tableData = res.data
+      })
     },
     /**
      * 删除操作
      * @param:rednum
      */
-    daletRedSource(index) {
-      console.log(this.tableData[index]);
-      var result = confirm("请确认是否删除？");
+    daletRedSource (index) {
+      console.log(this.tableData[index])
+      var result = confirm('请确认是否删除？')
       if (result) {
         daletRedSourceByRedID(this.tableData[index].redID).then(res => {
           if (res) {
-            this.$Message.success("删除成功！");
-            this.getNewTableDate();
+            this.$Message.success('删除成功！')
+            this.getNewTableDate()
           } else {
-            this.$Message.error("删除失败！");
+            this.$Message.error('删除失败！')
           }
-        });
+        })
       } else {
-        this.$Message.error("删除取消！");
+        this.$Message.error('删除取消！')
       }
     },
     /**
@@ -200,77 +200,77 @@ export default {
      * @param:shidu
      * @param:totime
      */
-    updataredSource(index) {
+    updataredSource (index) {
       getredsourceByRedID(this.tableData[index].redID).then(res => {
-        console.log(res.data[0]);
-        this.formValidate.redID = res.data[0].redID;
-        this.formValidate.redname = res.data[0].redname;
-        this.formValidate.sourcearea = res.data[0].sourcearea;
-        this.formValidate.sourceyear = res.data[0].sourceyear;
-        this.formValidate.sourcecompany = res.data[0].sourcecompany;
-      });
-      this.modalVisible = true;
+        console.log(res.data[0])
+        this.formValidate.redID = res.data[0].redID
+        this.formValidate.redname = res.data[0].redname
+        this.formValidate.sourcearea = res.data[0].sourcearea
+        this.formValidate.sourceyear = res.data[0].sourceyear
+        this.formValidate.sourcecompany = res.data[0].sourcecompany
+      })
+      this.modalVisible = true
     },
-    handleSubmit() {
+    handleSubmit () {
       this.$refs.formValidate.validate(validate => {
-        console.log(validate);
-        var formdata = {};
-        formdata.redname = this.formValidate.redname;
-        formdata.sourcearea = this.formValidate.sourcearea;
-        formdata.sourceyear = this.formValidate.sourceyear;
-        formdata.sourcecompany = this.formValidate.sourcecompany;
-        formdata.redID = this.formValidate.redID;
-        console.log(formdata);
+        console.log(validate)
+        var formdata = {}
+        formdata.redname = this.formValidate.redname
+        formdata.sourcearea = this.formValidate.sourcearea
+        formdata.sourceyear = this.formValidate.sourceyear
+        formdata.sourcecompany = this.formValidate.sourcecompany
+        formdata.redID = this.formValidate.redID
+        console.log(formdata)
         if (validate) {
           updateRedSource(formdata).then(res => {
-            this.$Message.success("修改成功！");
-            this.getNewTableDate();
-            this.modalVisible = false;
-          });
+            this.$Message.success('修改成功！')
+            this.getNewTableDate()
+            this.modalVisible = false
+          })
         } else {
-          this.$message.error("修改失败！！");
+          this.$message.error('修改失败！！')
         }
-      });
+      })
     },
-    //搜索功能
-    handleSearch() {
-      var formdata = {};
+    // 搜索功能
+    handleSearch () {
+      var formdata = {}
       formdata.redname = this.formValidate.redname
-      this.getfindredSourceByRedname(formdata);
+      this.getfindredSourceByRedname(formdata)
       console.log(formdata.redname)
     },
-    getfindredSourceByRedname(formdata){
-       if (formdata.redname === "") {
+    getfindredSourceByRedname (formdata) {
+      if (formdata.redname === '') {
         getreesourceTableData().then(res => {
-          this.tableData = res.data;
-        });
+          this.tableData = res.data
+        })
       }
-      findredSourceByRedname(formdata).then(res=>{
+      findredSourceByRedname(formdata).then(res => {
         console.log(res)
         this.tableData = res.data
       })
     }
   },
-  mounted() {
+  mounted () {
     getreesourceTableData().then(res => {
-      this.totalProblemList = res.data;
+      this.totalProblemList = res.data
       // 拿到所有数据
-      this.dataCount = this.totalProblemList.length;
+      this.dataCount = this.totalProblemList.length
       // 总条数
       if (this.dataCount < this.pageSize) {
-        this.showList = this.totalProblemList;
+        this.showList = this.totalProblemList
       } else {
-        this.showList = this.totalProblemList.slice(0, this.pageSize);
+        this.showList = this.totalProblemList.slice(0, this.pageSize)
       }
-    });
+    })
   },
-  //请求钩子
-  created() {
+  // 请求钩子
+  created () {
     getreesourceTableData().then(res => {
-      this.tableData = res.data;
-    });
+      this.tableData = res.data
+    })
   }
-};
+}
 </script>
 
 <style>

@@ -1,28 +1,30 @@
 <template>
   <div id="app">
     <router-view v-if="isRouterAlive"></router-view>
+    <!-- 全局音效 -->
+    <!-- <audio src="" id="eventAudio"></audio> -->
   </div>
 </template>
 
 <script>
 export default {
   name: 'App',
-   provide(){
+  provide () {
     return {
-      reload:this.reload
+      reload: this.reload
     }
   },
-  data() {
+  data () {
     return {
       isRouterAlive: true
-    };
+    }
   },
-  methods:{
+  methods: {
     // 定义局部刷新
-    reload(){
-      this.isRouterAlive = false;
-      this.$nextTick(function(){
-        this.isRouterAlive=true
+    reload () {
+      this.isRouterAlive = false
+      this.$nextTick(function () {
+        this.isRouterAlive = true
       })
     }
   }
