@@ -397,3 +397,54 @@ export const setTitle = (routeItem, vm) => {
   const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
   window.document.title = resTitle
 }
+/**
+ * @description 各个时间格式转换工具
+ * @param {Object} format 传入的各个格式的时间
+ */
+// export function formatDate(format) {
+//   var date = {
+//        "M+": this.getMonth() + 1,//月份
+//        "d+": this.getDate(),//日 
+//        "h+": this.getHours(),//小时
+//        "m+": this.getMinutes(),//分
+//        "s+": this.getSeconds(),//秒
+//        "q+": Math.floor((this.getMonth() + 3) / 3),//季度 
+//        "S+": this.getMilliseconds(),//毫秒 
+//       }
+//    ;
+//    if (/(y+)/i.test(format)) {
+//        format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+//    }
+//    for (var k in date) {
+//        if (new RegExp("(" + k + ")").test(format)) {
+//            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+//        }
+//    };
+//    return format;
+// }
+//这个函数接收两个参数，第一个是params时间（已经从时间戳转化完了）,第二个是fmt格式，这里传的是'yyyy-MM-dd hh:mm:ss'
+export function formatDate(params, fmt) {
+  debugger
+  var date = new Date(params);
+  // console.log(date)
+  if (/(y+)/.test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
+  }
+  let o = {
+      'M+': date.getMonth() + 1,
+      'd+': date.getDate(),
+      'h+': date.getHours(),
+      'm+': date.getMinutes(),
+      's+': date.getSeconds()
+  };
+  for (let k in o) {
+      if (new RegExp(`(${k})`).test(fmt)) {
+          let str = o[k] + '';
+          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : padLeftZero(str));
+      }
+  }
+  return fmt;
+};
+function padLeftZero (str) {
+  return ('00' + str).substr(str.length);
+}; 

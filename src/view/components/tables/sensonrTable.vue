@@ -1,12 +1,11 @@
 <template v-for="(item,index) in showList">
   <div>
     <Card>
-      <Form :model="formValidate" :label-width="100"  inline> 
-        红酒名字:<Input style="width: 150px;" v-model="formValidate.redname" placeholder="请输入红酒名字"></Input>    
-         &nbsp; &nbsp; &nbsp;   
+      <Form :model="formValidate" :label-width="100" inline>
+        设备号:
+        <Input style="width: 150px;" v-model="formValidate.sensonrnum" placeholder="请输入要查询的设备号"></Input>&nbsp; &nbsp; &nbsp;
         <Button type="primary" @click="handleSearch()">搜索</Button>
-      </Form>
-      &nbsp; &nbsp; &nbsp; 
+      </Form>&nbsp; &nbsp; &nbsp;
       <tables
         ref="tables"
         editable
@@ -32,23 +31,18 @@
     <Modal v-model="modalVisible" title="修改">
       <template>
         <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
-          <Form-item label="红酒编号" prop="rednum">
-            <Input v-model="formValidate.rednum" readonly="readonly"></Input>
+
+          <Form-item label="设备号" prop="sensonrnum">
+            <Input v-model="formValidate.sensonrnum" readonly="readonly"></Input>
           </Form-item>
-          <Form-item label="红酒名字" prop="redname">
-            <Input v-model="formValidate.redname" placeholder="请重新输入红酒名字"></Input>
+          <Form-item label="设备名称" prop="sensorname">
+            <Input v-model="formValidate.sensorname" placeholder="请重新输入设备名称"></Input>
           </Form-item>
-          <Form-item label="温度" prop="wendu">
-            <Input v-model="formValidate.wendu" placeholder="请重新输入温度"></Input>
+          <Form-item label="状态" prop="state">
+            <Input v-model="formValidate.state" placeholder="请重新输入状态 0:关闭;1:打开"></Input>
           </Form-item>
-          <Form-item label="湿度" prop="shidu">
-            <Input v-model="formValidate.shidu" placeholder="请重新输入湿度"></Input>
-          </Form-item>
-          <Form-item label="检测时间" prop="totime">
-            <Input v-model="formValidate.totime" placeholder="请重新输入检测时间"></Input>
-          </Form-item>
-          <Form-item label="设备号" prop="wendu">
-            <Input v-model="formValidate.sensonrnum" placeholder="请重新输入设备号"></Input>
+          <Form-item label="设备串口号" prop="com">
+            <Input v-model="formValidate.com" placeholder="请重新输入设备串口号"></Input>
           </Form-item>
           <Form-item>
             <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
@@ -63,12 +57,12 @@
 <script>
 import Tables from "_c/tables";
 import {
-  getTableData,
-  getdelRedHis,
-  getRedHisByRednum,
-  updateRedHis,
-  getfindredHisByRedname
-} from "@/api/data";
+  getsensonrTableData,
+  GetfindSensonrByNum,
+  GetfindSensonrByNumSousuo,
+  DelSensonrByNum,
+  updateSensonr
+} from "@/api/sensonr";
 import axios from "axios";
 export default {
   name: "tables_page",
@@ -85,55 +79,40 @@ export default {
       dataCount: 0,
       modalVisible: false,
       columns: [
-        { title: "Name", key: "redname", sortable: true },
-        { title: "温度(℃)", key: "wendu", editable: true,align: "center" },
-        { title: "湿度(%)", key: "shidu" ,align: "center"},
-        { title: "检测时间", key: "totime" ,align: "center"},
-        { title: "设备号", key: "sensonrnum",align: "center" },
+        { title: "设备号", key: "sensonrnum", sortable: true },
+        {
+          title: "设备名称",
+          key: "sensorname",
+          editable: true,
+          align: "center"
+        },
         {
           title: "状态",
+          key: "state",
           align: "center",
           render: (h, params) => {
             let row = params.row;
-            let text1 = "";
-            let color1 = "";
-            let text2 = "";
-            let color2 = ""
-            if(row.wendu >10 && row.wendu<14){
-              text1="温度正常";
-              color1="green"
-            }else{
-              text1 = "温度异常";
-              color1 = "red"
-            }if(row.shidu>65 && row.shidu<76){
-              text2 = "湿度正常";
-              color2 = "green"
-            }else{
-              text2 = "湿度异常";
-              color2 = "red"
-            }
-            return h("div", [
-              h(
-                "Tag",
-                {
-                  props: {
-                    color: color1
-                  }
-                },
-                text1
-              ),
-              h(
-                "Tag",
-                {
-                  props: {
-                    color: color2
-                  },
-                },
-                text2
-              )
-            ]);
+            let text = "";
+            let color = "";
+            if (row.state === 0) {
+              text = "关闭";
+              color = "red";
+            } else if (row.state === 1) {
+              text = "开启";
+              color = "green";
+            } 
+            return h(
+              "Tag",
+              {
+                props: {
+                  color: color
+                }
+              },
+              text
+            );
           }
         },
+        { title: "设备串口号", key: "com", align: "center" },
         {
           title: "操作",
           key: "action",
@@ -149,12 +128,12 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.updataredHis(tableData.index);
+                      this.updataredSensonr(tableData.index);
                     }
                   },
-                   style: {                                  
+                  style: {
                     marginRight: "5px"
-                  },
+                  }
                 },
                 "修改"
               ),
@@ -167,7 +146,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.daletTable(tableData.index);
+                      this.DelSensonr(tableData.index);
                     }
                   }
                 },
@@ -179,24 +158,23 @@ export default {
       ],
       tableData: [],
       formValidate: {
-        rednum: "",
-        redname: "",
-        wendu: "",
-        shidu: "",
         sensonrnum: "",
-        totime: ""
-        // price:''
+        sensorname: "",
+        state: "",
+        com: ""
       },
       ruleValidate: {
-        redname: [
-          { required: true, message: "红酒名字不能为空", trigger: "blur" }
+        sensorname: [
+          { required: true, message: "设备名称不能为空", trigger: "blur" }
         ],
-        wendu: [{ required: true, message: "温度不能为空", trigger: "blur" }],
-        shidu: [{ required: true, message: "湿度不能为空", trigger: "blur" }],
-        sensonrnum: [
-          { required: true, message: "设备号不能为空", trigger: "blur" }
+        state: [
+          {
+            required: true,
+            message: "状态不可为空0:正常 1:关闭",
+            trigger: "blur"
+          }
         ],
-        totime: [{ required: true, message: "时间不能为空", trigger: "blur" }]
+        com: [{ required: true, message: "串口号不能为空", trigger: "blur" }]
       }
     };
   },
@@ -211,44 +189,25 @@ export default {
     },
     // 前端分页
     onChangepage(index) {
-      debugger
       var _start = (index - 1) * this.pageSize;
       var _end = index * this.pageSize;
       this.showList = this.totalProblemList.slice(_start, _end);
     },
-    // 重新拿刷新数据
+    // 重新拿 刷新数据
     getNewTableDate() {
-      getTableData().then(res => {
+      getsensonrTableData().then(res => {
         this.tableData = res.data;
       });
-    },
-    //搜索功能
-    handleSearch() {
-      var formdata = {};
-      formdata.redname = this.formValidate.redname
-      this.getfindredHisByRedname1(formdata);
-      console.log(formdata.redname)
-    },
-    getfindredHisByRedname1(formdata){
-       if (formdata.redname === "") {
-        getTableData().then(res => {
-          this.tableData = res.data;
-        });
-      }
-      getfindredHisByRedname(formdata).then(res=>{
-        console.log(res)
-        this.tableData = res.data
-      })
     },
     /**
      * 删除操作
      * @param:rednum
      */
-    daletTable(index) {
+    DelSensonr(index) {
       console.log(this.tableData[index]);
       var result = confirm("请确认是否删除？");
       if (result) {
-        getdelRedHis(this.tableData[index].rednum).then(res => {
+        DelSensonrByNum(this.tableData[index].sensonrnum).then(res => {
           if (res) {
             this.$Message.success("删除成功！");
             this.getNewTableDate();
@@ -261,22 +220,15 @@ export default {
       }
     },
     /**
-     * 红酒温湿度历史信息修改操作
-     * @param:rednum
-     * @param:redname
-     * @param:wendu
-     * @param:shidu
-     * @param:totim
+     * 传感器信息修改操作
      */
-    updataredHis(index) {
-      getRedHisByRednum(this.tableData[index].rednum).then(res => {
+    updataredSensonr(index) {
+      GetfindSensonrByNum(this.tableData[index].sensonrnum).then(res => {
         console.log(res.data[0]);
-        this.formValidate.rednum = res.data[0].rednum;
-        this.formValidate.redname = res.data[0].redname;
-        this.formValidate.wendu = res.data[0].wendu;
-        this.formValidate.shidu = res.data[0].shidu;
-        this.formValidate.totime = res.data[0].totime;
         this.formValidate.sensonrnum = res.data[0].sensonrnum;
+        this.formValidate.sensorname = res.data[0].sensorname;
+        this.formValidate.state = res.data[0].state;
+        this.formValidate.com = res.data[0].com;
       });
       this.modalVisible = true;
     },
@@ -284,15 +236,14 @@ export default {
       this.$refs.formValidate.validate(validate => {
         console.log(validate);
         var formdata = {};
-        formdata.redname = this.formValidate.redname;
-        formdata.wendu = this.formValidate.wendu;
-        formdata.shidu = this.formValidate.shidu;
-        formdata.totime = this.formValidate.totime;
         formdata.sensonrnum = this.formValidate.sensonrnum;
-        formdata.rednum = this.formValidate.rednum;
+        formdata.sensorname = this.formValidate.sensorname;
+        formdata.state = this.formValidate.state;
+        formdata.com = this.formValidate.com;
+    
         console.log(formdata);
         if (validate) {
-          updateRedHis(formdata).then(res => {
+          updateSensonr(formdata).then(res => {
             this.$Message.success("修改成功！");
             this.getNewTableDate();
             this.modalVisible = false;
@@ -301,10 +252,27 @@ export default {
           this.$message.error("修改失败！！");
         }
       });
+    },
+    //搜索功能
+    handleSearch() {
+      var formdata = {};
+      formdata.sensonrnum = this.formValidate.sensonrnum;
+      this.GetfindSensonrByNum1(formdata);
+    },
+    GetfindSensonrByNum1(formdata) {
+      if (formdata.sensonrnum === "") {
+        getsensonrTableData().then(res => {
+          this.tableData = res.data;
+        });
+      }
+      GetfindSensonrByNumSousuo(formdata).then(res => {
+        console.log(res);
+        this.tableData = res.data;
+      });
     }
   },
   mounted() {
-    getTableData().then(res => {
+    getsensonrTableData().then(res => {
       this.totalProblemList = res.data;
       // 拿到所有数据
       this.dataCount = this.totalProblemList.length;
@@ -318,7 +286,7 @@ export default {
   },
   //请求钩子
   created() {
-    getTableData().then(res => {
+    getsensonrTableData().then(res => {
       this.tableData = res.data;
     });
   }

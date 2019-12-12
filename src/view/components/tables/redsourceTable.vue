@@ -2,7 +2,7 @@
   <div>
     <Card>
       <Form :model="formValidate" :label-width="100"  inline> 
-        红酒名字:<Input style="width: 150px;" v-model="formValidate.redname" placeholder="请输入红酒名字"></Input>    
+        红酒品牌:<Input style="width: 150px;" v-model="formValidate.redname" placeholder="请输入红酒品牌"></Input>    
          &nbsp; &nbsp; &nbsp;   
         <Button type="primary" @click="handleSearch()">搜索</Button>
       </Form>
@@ -32,23 +32,20 @@
     <Modal v-model="modalVisible" title="修改">
       <template>
         <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
-          <Form-item label="红酒编号" prop="rednum">
-            <Input v-model="formValidate.rednum" readonly="readonly"></Input>
+          <Form-item label="红酒编号" prop="redID">
+            <Input v-model="formValidate.redID" readonly="readonly"></Input>
           </Form-item>
-          <Form-item label="红酒名字" prop="redname">
-            <Input v-model="formValidate.redname" placeholder="请重新输入红酒名字"></Input>
+          <Form-item label="红酒品牌" prop="redname">
+            <Input v-model="formValidate.redname" placeholder="请重新输入红酒品牌"></Input>
           </Form-item>
-          <Form-item label="温度" prop="wendu">
-            <Input v-model="formValidate.wendu" placeholder="请重新输入温度"></Input>
+          <Form-item label="原产地" prop="sourcearea">
+            <Input v-model="formValidate.sourcearea" placeholder="请重新输入原产地"></Input>
           </Form-item>
-          <Form-item label="湿度" prop="shidu">
-            <Input v-model="formValidate.shidu" placeholder="请重新输入湿度"></Input>
+          <Form-item label="生产日期" prop="sourceyear">
+            <Input v-model="formValidate.sourceyear" placeholder="请重新输入生产日期"></Input>
           </Form-item>
-          <Form-item label="检测时间" prop="totime">
-            <Input v-model="formValidate.totime" placeholder="请重新输入检测时间"></Input>
-          </Form-item>
-          <Form-item label="设备号" prop="wendu">
-            <Input v-model="formValidate.sensonrnum" placeholder="请重新输入设备号"></Input>
+          <Form-item label="生产公司" prop="sourcecompany">
+            <Input v-model="formValidate.sourcecompany" placeholder="请重新输入检测时间生产公司"></Input>
           </Form-item>
           <Form-item>
             <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
@@ -62,13 +59,13 @@
 
 <script>
 import Tables from "_c/tables";
-import {
-  getTableData,
-  getdelRedHis,
-  getRedHisByRednum,
-  updateRedHis,
-  getfindredHisByRedname
-} from "@/api/data";
+import { 
+ getreesourceTableData,
+ getredsourceByRedID,
+ updateRedSource,
+ daletRedSourceByRedID,
+ findredSourceByRedname
+} from "@/api/redsource";
 import axios from "axios";
 export default {
   name: "tables_page",
@@ -85,55 +82,11 @@ export default {
       dataCount: 0,
       modalVisible: false,
       columns: [
-        { title: "Name", key: "redname", sortable: true },
-        { title: "温度(℃)", key: "wendu", editable: true,align: "center" },
-        { title: "湿度(%)", key: "shidu" ,align: "center"},
-        { title: "检测时间", key: "totime" ,align: "center"},
-        { title: "设备号", key: "sensonrnum",align: "center" },
-        {
-          title: "状态",
-          align: "center",
-          render: (h, params) => {
-            let row = params.row;
-            let text1 = "";
-            let color1 = "";
-            let text2 = "";
-            let color2 = ""
-            if(row.wendu >10 && row.wendu<14){
-              text1="温度正常";
-              color1="green"
-            }else{
-              text1 = "温度异常";
-              color1 = "red"
-            }if(row.shidu>65 && row.shidu<76){
-              text2 = "湿度正常";
-              color2 = "green"
-            }else{
-              text2 = "湿度异常";
-              color2 = "red"
-            }
-            return h("div", [
-              h(
-                "Tag",
-                {
-                  props: {
-                    color: color1
-                  }
-                },
-                text1
-              ),
-              h(
-                "Tag",
-                {
-                  props: {
-                    color: color2
-                  },
-                },
-                text2
-              )
-            ]);
-          }
-        },
+        { title: "红酒编号", key: "redID", sortable: true },
+        { title: "红酒品牌", key: "redname", editable: true },
+        { title: "原产地", key: "sourcearea" },
+        { title: "生产日期", key: "sourceyear" },
+        { title: "生产公司", key: "sourcecompany" },
         {
           title: "操作",
           key: "action",
@@ -149,10 +102,10 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.updataredHis(tableData.index);
+                      this.updataredSource(tableData.index);
                     }
                   },
-                   style: {                                  
+                  style: {                                  
                     marginRight: "5px"
                   },
                 },
@@ -167,7 +120,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.daletTable(tableData.index);
+                      this.daletRedSource(tableData.index);
                     }
                   }
                 },
@@ -179,13 +132,11 @@ export default {
       ],
       tableData: [],
       formValidate: {
-        rednum: "",
+        redID: "",
         redname: "",
-        wendu: "",
-        shidu: "",
-        sensonrnum: "",
-        totime: ""
-        // price:''
+        sourcearea: "",
+        sourceyear: "",
+        sourcecompany: "",
       },
       ruleValidate: {
         redname: [
@@ -211,44 +162,25 @@ export default {
     },
     // 前端分页
     onChangepage(index) {
-      debugger
       var _start = (index - 1) * this.pageSize;
       var _end = index * this.pageSize;
       this.showList = this.totalProblemList.slice(_start, _end);
     },
     // 重新拿刷新数据
     getNewTableDate() {
-      getTableData().then(res => {
+      getreesourceTableData().then(res => {
         this.tableData = res.data;
       });
-    },
-    //搜索功能
-    handleSearch() {
-      var formdata = {};
-      formdata.redname = this.formValidate.redname
-      this.getfindredHisByRedname1(formdata);
-      console.log(formdata.redname)
-    },
-    getfindredHisByRedname1(formdata){
-       if (formdata.redname === "") {
-        getTableData().then(res => {
-          this.tableData = res.data;
-        });
-      }
-      getfindredHisByRedname(formdata).then(res=>{
-        console.log(res)
-        this.tableData = res.data
-      })
     },
     /**
      * 删除操作
      * @param:rednum
      */
-    daletTable(index) {
+    daletRedSource(index) {
       console.log(this.tableData[index]);
       var result = confirm("请确认是否删除？");
       if (result) {
-        getdelRedHis(this.tableData[index].rednum).then(res => {
+        daletRedSourceByRedID(this.tableData[index].redID).then(res => {
           if (res) {
             this.$Message.success("删除成功！");
             this.getNewTableDate();
@@ -261,22 +193,21 @@ export default {
       }
     },
     /**
-     * 红酒温湿度历史信息修改操作
+     * 红酒信息修改操作
      * @param:rednum
      * @param:redname
      * @param:wendu
      * @param:shidu
-     * @param:totim
+     * @param:totime
      */
-    updataredHis(index) {
-      getRedHisByRednum(this.tableData[index].rednum).then(res => {
+    updataredSource(index) {
+      getredsourceByRedID(this.tableData[index].redID).then(res => {
         console.log(res.data[0]);
-        this.formValidate.rednum = res.data[0].rednum;
+        this.formValidate.redID = res.data[0].redID;
         this.formValidate.redname = res.data[0].redname;
-        this.formValidate.wendu = res.data[0].wendu;
-        this.formValidate.shidu = res.data[0].shidu;
-        this.formValidate.totime = res.data[0].totime;
-        this.formValidate.sensonrnum = res.data[0].sensonrnum;
+        this.formValidate.sourcearea = res.data[0].sourcearea;
+        this.formValidate.sourceyear = res.data[0].sourceyear;
+        this.formValidate.sourcecompany = res.data[0].sourcecompany;
       });
       this.modalVisible = true;
     },
@@ -285,14 +216,13 @@ export default {
         console.log(validate);
         var formdata = {};
         formdata.redname = this.formValidate.redname;
-        formdata.wendu = this.formValidate.wendu;
-        formdata.shidu = this.formValidate.shidu;
-        formdata.totime = this.formValidate.totime;
-        formdata.sensonrnum = this.formValidate.sensonrnum;
-        formdata.rednum = this.formValidate.rednum;
+        formdata.sourcearea = this.formValidate.sourcearea;
+        formdata.sourceyear = this.formValidate.sourceyear;
+        formdata.sourcecompany = this.formValidate.sourcecompany;
+        formdata.redID = this.formValidate.redID;
         console.log(formdata);
         if (validate) {
-          updateRedHis(formdata).then(res => {
+          updateRedSource(formdata).then(res => {
             this.$Message.success("修改成功！");
             this.getNewTableDate();
             this.modalVisible = false;
@@ -301,10 +231,28 @@ export default {
           this.$message.error("修改失败！！");
         }
       });
+    },
+    //搜索功能
+    handleSearch() {
+      var formdata = {};
+      formdata.redname = this.formValidate.redname
+      this.getfindredSourceByRedname(formdata);
+      console.log(formdata.redname)
+    },
+    getfindredSourceByRedname(formdata){
+       if (formdata.redname === "") {
+        getreesourceTableData().then(res => {
+          this.tableData = res.data;
+        });
+      }
+      findredSourceByRedname(formdata).then(res=>{
+        console.log(res)
+        this.tableData = res.data
+      })
     }
   },
   mounted() {
-    getTableData().then(res => {
+    getreesourceTableData().then(res => {
       this.totalProblemList = res.data;
       // 拿到所有数据
       this.dataCount = this.totalProblemList.length;
@@ -318,7 +266,7 @@ export default {
   },
   //请求钩子
   created() {
-    getTableData().then(res => {
+    getreesourceTableData().then(res => {
       this.tableData = res.data;
     });
   }
