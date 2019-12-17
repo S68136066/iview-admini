@@ -3,6 +3,7 @@ export default {
   login: '登錄',
   jarManger_page: '打包管理',
   components: '打包监控系统',
+  jarMassage_page:'打包历史记录',
   count_to_page: '数字渐变',
   tables_page: '红酒温湿度历史信息管理',
   redsource_page: '红酒信息管理',
