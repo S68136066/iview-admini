@@ -292,13 +292,13 @@ export default {
         time: ''
       },
       ruleValidate: {
-        sensorname: [
-          { required: true, message: '设备名称不能为空', trigger: 'blur' }
+        jarName: [
+          { required: true, message: '提交需求号不可为空！', trigger: 'blur' }
         ],
-        state: [
+        upEnv: [
           {
             required: true,
-            message: '状态不可为空0:正常 1:关闭',
+            message: '提交更新环境不可为空！',
             trigger: 'blur'
           }
         ],
