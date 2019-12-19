@@ -302,7 +302,7 @@ export default {
             trigger: "blur"
           }
         ],
-        com: [{ required: true, message: "串口号不能为空", trigger: "blur" }]
+        //subTime: [{ required: true, message: "提交时间不可以为空！", trigger: "blur" }]
       }
     };
   },
@@ -527,31 +527,33 @@ export default {
     //   const audio = document.getElementById("audio");
     //   audio.play();
     // },
+    //定时器 定时播报还未打包的需求
     setTimer: function() {
       this.timer = setInterval(() => {
         var statusAudio = {};
         var statusPD = [];
         getJarMangerData().then(res => {
-          debugger;
           this.statusAudio = res.data;
-          var audionew = 0;
-          for (audionew == 0; audionew < this.statusAudio.length; audionew++) {
+          //var audionew = 0;
+          for (let audionew = 0; audionew < this.statusAudio.length; audionew++) {
             if (this.statusAudio[audionew].status == 0) {
               //this.statusAudio[audionew].jarName
               statusPD.push(this.statusAudio[audionew].jarName);
             }
           }
-          console.log(statusAudio);
+          console.log("启动定时器成功！");
           console.log(statusPD.length);
+          if (statusPD.length !== 0) {
+            new Audio(
+              "http://tts.baidu.com/text2audio?cuid=baiduid&lan=zh&ctp=1&pdt=311&tex=" +
+                statusPD +
+                "需求还未打包"
+            ).play();
+          }else{
+            this.$Message.success("所有需求都已经打完！")
+          }
         });
-
-        console.log("启动定时器成功！");
-        new Audio(
-          "http://tts.baidu.com/text2audio?cuid=baiduid&lan=zh&ctp=1&pdt=311&tex=" +
-            statusPD +
-            "需求还未打包"
-        ).play();
-      }, 6000);
+      }, 60000);
     }
   },
   mounted() {
